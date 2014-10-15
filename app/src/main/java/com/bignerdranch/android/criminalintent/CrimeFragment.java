@@ -28,6 +28,8 @@ import android.widget.ImageView;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnCheckedChanged;
@@ -56,6 +58,8 @@ public class CrimeFragment extends Fragment {
     @InjectView(R.id.crime_suspectButton)
     Button mSuspectButton;
     Callbacks mCallbacks;
+    @Inject
+    CrimeLab mCrimeLab;
 
     public interface Callbacks {
         void onCrimeUpdated(Crime crime);
@@ -86,9 +90,10 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        InjectionUtils.injectClass(getActivity(), this);
         
         UUID crimeId = (UUID)getArguments().getSerializable(ARG_CRIME_ID);
-        mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
+        mCrime = mCrimeLab.getCrime(crimeId);
 
         setHasOptionsMenu(true);
     }
@@ -275,7 +280,7 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        CrimeLab.get(getActivity()).saveCrimes();
+        mCrimeLab.saveCrimes();
     }
 
     @Override

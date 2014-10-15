@@ -12,6 +12,8 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.OnPageChange;
 
@@ -19,6 +21,8 @@ public class CrimePagerActivity extends FragmentActivity implements CrimeFragmen
     private static final String EXTRA_CRIME_ID = "com.bignerdranch.android.criminalintent.crime_id";
 
     ViewPager mViewPager;
+    @Inject
+    protected CrimeLab mCrimeLab;
 
     public static Intent newIntent(Context context, UUID crimeId) {
         Intent intent = new Intent(context, CrimePagerActivity.class);
@@ -29,13 +33,14 @@ public class CrimePagerActivity extends FragmentActivity implements CrimeFragmen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        InjectionUtils.injectClass(this);
 
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.viewPager);
         setContentView(mViewPager);
         ButterKnife.inject(this);
 
-        final ArrayList<Crime> crimes = CrimeLab.get(this).getCrimes();
+        final ArrayList<Crime> crimes = mCrimeLab.getCrimes();
 
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
@@ -61,7 +66,7 @@ public class CrimePagerActivity extends FragmentActivity implements CrimeFragmen
 
     @OnPageChange(R.id.viewPager)
     public void onViewPagerPageChange(int pos) {
-        String title = CrimeLab.get(this).getCrimes().get(pos).getTitle();
+        String title = mCrimeLab.getCrimes().get(pos).getTitle();
         setTitle(title);
     }
 

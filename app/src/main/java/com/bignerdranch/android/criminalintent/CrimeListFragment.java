@@ -1,7 +1,5 @@
 package com.bignerdranch.android.criminalintent;
 
-import java.util.ArrayList;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
@@ -24,10 +22,16 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import javax.inject.Inject;
+
 public class CrimeListFragment extends ListFragment {
     private ArrayList<Crime> mCrimes;
     private boolean mSubtitleVisible;
     private Callbacks mCallbacks;
+    @Inject
+    protected CrimeLab mCrimeLab;
 
     public interface Callbacks {
         void onCrimeSelected(Crime crime);
@@ -52,9 +56,10 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        InjectionUtils.injectClass(getActivity(), this);
         setHasOptionsMenu(true);
         getActivity().setTitle(R.string.crimes_title);
-        mCrimes = CrimeLab.get(getActivity()).getCrimes();
+        mCrimes = mCrimeLab.getCrimes();
         CrimeAdapter adapter = new CrimeAdapter(mCrimes);
         setListAdapter(adapter);
         setRetainInstance(true);
@@ -94,10 +99,9 @@ public class CrimeListFragment extends ListFragment {
                     switch (item.getItemId()) {
                         case R.id.menu_item_delete_crime:
                             CrimeAdapter adapter = (CrimeAdapter)getListAdapter();
-                            CrimeLab crimeLab = CrimeLab.get(getActivity());
                             for (int i = adapter.getCount() - 1; i >= 0; i--) {
                                 if (getListView().isItemChecked(i)) {
-                                    crimeLab.deleteCrime(adapter.getItem(i));
+                                    mCrimeLab.deleteCrime(adapter.getItem(i));
                                 }
                             }
                             mode.finish(); 
@@ -149,7 +153,7 @@ public class CrimeListFragment extends ListFragment {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
                 Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
+                mCrimeLab.addCrime(crime);
                 ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
                 mCallbacks.onCrimeSelected(crime);
                 return true;
@@ -183,7 +187,7 @@ public class CrimeListFragment extends ListFragment {
 
         switch (item.getItemId()) {
             case R.id.menu_item_delete_crime:
-                CrimeLab.get(getActivity()).deleteCrime(crime);
+                mCrimeLab.deleteCrime(crime);
                 adapter.notifyDataSetChanged();
                 return true;
         }
