@@ -48,6 +48,7 @@ public class CrimePagerActivity extends FragmentActivity implements CrimeFragmen
             public int getCount() {
                 return crimes.size();
             }
+
             @Override
             public Fragment getItem(int pos) {
                 UUID crimeId =  crimes.get(pos).getId();

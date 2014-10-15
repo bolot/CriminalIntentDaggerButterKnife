@@ -147,10 +147,8 @@ public class CrimeFragment extends Fragment {
 
     @OnClick(R.id.crime_date)
     public void onDateButtonClick(View v) {
-        FragmentManager fm = getActivity()
-                .getSupportFragmentManager();
-        DatePickerFragment dialog = DatePickerFragment
-                .newInstance(mCrime.getDate());
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
         dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
         dialog.show(fm, DIALOG_DATE);
     }
@@ -165,15 +163,13 @@ public class CrimeFragment extends Fragment {
     @OnClick(R.id.crime_imageView)
     public void onPhotoViewClick(View v) {
         Photo p = mCrime.getPhoto();
-        if (p == null)
+        if (p == null) {
             return;
+        }
 
-        FragmentManager fm = getActivity()
-                .getSupportFragmentManager();
-        String path = getActivity()
-                .getFileStreamPath(p.getFilename()).getAbsolutePath();
-        ImageFragment.createInstance(path)
-                .show(fm, DIALOG_IMAGE);
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        String path = getActivity().getFileStreamPath(p.getFilename()).getAbsolutePath();
+        ImageFragment.createInstance(path).show(fm, DIALOG_IMAGE);
     }
 
     @OnClick(R.id.crime_suspectButton)
@@ -197,8 +193,7 @@ public class CrimeFragment extends Fragment {
         Photo p = mCrime.getPhoto();
         BitmapDrawable b = null;
         if (p != null) {
-            String path = getActivity()
-                .getFileStreamPath(p.getFilename()).getAbsolutePath();
+            String path = getActivity().getFileStreamPath(p.getFilename()).getAbsolutePath();
             b = PictureUtils.getScaledDrawable(getActivity(), path);
         }
         mPhotoView.setImageDrawable(b);
@@ -226,8 +221,7 @@ public class CrimeFragment extends Fragment {
             updateDate();
         } else if (requestCode == REQUEST_PHOTO) {
             // create a new Photo object and attach it to the crime
-            String filename = data
-                .getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+            String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
             if (filename != null) {
                 Photo p = new Photo(filename);
                 mCrime.setPhoto(p);
@@ -236,9 +230,8 @@ public class CrimeFragment extends Fragment {
             }
         } else if (requestCode == REQUEST_CONTACT) {
             Uri contactUri = data.getData();
-            String[] queryFields = new String[] { ContactsContract.Contacts.DISPLAY_NAME_PRIMARY };
-            Cursor c = getActivity().getContentResolver()
-                .query(contactUri, queryFields, null, null, null);
+            String[] queryFields = new String[] { ContactsContract.Contacts.DISPLAY_NAME };
+            Cursor c = getActivity().getContentResolver().query(contactUri, queryFields, null, null, null);
 
             if (c.getCount() == 0) {
                 c.close();

@@ -64,16 +64,14 @@ public class CrimeCameraFragment extends Fragment {
                     success = false;
                 } 
             }
-            
+
+            // set the photo filename on the result intent
             if (success) {
-                // set the photo filename on the result intent
-                if (success) {
-                    Intent i = new Intent();
-                    i.putExtra(EXTRA_PHOTO_FILENAME, filename);
-                    getActivity().setResult(Activity.RESULT_OK, i);
-                } else {
-                    getActivity().setResult(Activity.RESULT_CANCELED);
-                }
+                Intent i = new Intent();
+                i.putExtra(EXTRA_PHOTO_FILENAME, filename);
+                getActivity().setResult(Activity.RESULT_OK, i);
+            } else {
+                getActivity().setResult(Activity.RESULT_CANCELED);
             }
             getActivity().finish();
         }

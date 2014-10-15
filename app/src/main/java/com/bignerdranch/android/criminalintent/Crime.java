@@ -1,10 +1,10 @@
 package com.bignerdranch.android.criminalintent;
 
-import java.util.Date;
-import java.util.UUID;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Date;
+import java.util.UUID;
 
 public class Crime {
 
@@ -32,10 +32,12 @@ public class Crime {
         mTitle = json.getString(JSON_TITLE);
         mSolved = json.getBoolean(JSON_SOLVED);
         mDate = new Date(json.getLong(JSON_DATE));
-        if (json.has(JSON_PHOTO))
+        if (json.has(JSON_PHOTO)) {
             mPhoto = new Photo(json.getJSONObject(JSON_PHOTO));
-        if (json.has(JSON_SUSPECT))
+        }
+        if (json.has(JSON_SUSPECT)) {
             mSuspect = json.getString(JSON_SUSPECT);
+        }
     }
 
     public JSONObject toJSON() throws JSONException {
@@ -44,8 +46,9 @@ public class Crime {
         json.put(JSON_TITLE, mTitle);
         json.put(JSON_SOLVED, mSolved);
         json.put(JSON_DATE, mDate.getTime());
-        if (mPhoto != null)
+        if (mPhoto != null) {
             json.put(JSON_PHOTO, mPhoto.toJSON());
+        }
         json.put(JSON_SUSPECT, mSuspect);
         return json;
     }

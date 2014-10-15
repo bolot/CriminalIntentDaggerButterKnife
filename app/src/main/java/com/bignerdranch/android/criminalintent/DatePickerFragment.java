@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.DatePicker;
@@ -41,10 +42,10 @@ public class DatePickerFragment extends DialogFragment {
         Intent i = new Intent();
         i.putExtra(ARG_DATE, mDate);
 
-        getTargetFragment()
-            .onActivityResult(getTargetRequestCode(), resultCode, i);
+        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, i);
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mDate = (Date)getArguments().getSerializable(ARG_DATE);

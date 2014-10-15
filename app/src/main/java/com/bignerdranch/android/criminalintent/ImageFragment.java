@@ -25,8 +25,7 @@ public class ImageFragment extends DialogFragment {
     private ImageView mImageView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, 
-            ViewGroup parent, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         mImageView = new ImageView(getActivity());
         String path = (String)getArguments().getSerializable(EXTRA_IMAGE_PATH);
         BitmapDrawable image = PictureUtils.getScaledDrawable(getActivity(), path);
