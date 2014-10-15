@@ -12,6 +12,9 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import butterknife.ButterKnife;
+import butterknife.OnPageChange;
+
 public class CrimePagerActivity extends FragmentActivity implements CrimeFragment.Callbacks {
     private static final String EXTRA_CRIME_ID = "com.bignerdranch.android.criminalintent.crime_id";
 
@@ -30,6 +33,7 @@ public class CrimePagerActivity extends FragmentActivity implements CrimeFragmen
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.viewPager);
         setContentView(mViewPager);
+        ButterKnife.inject(this);
 
         final ArrayList<Crime> crimes = CrimeLab.get(this).getCrimes();
 
@@ -53,6 +57,12 @@ public class CrimePagerActivity extends FragmentActivity implements CrimeFragmen
                 break;
             } 
         }
+    }
+
+    @OnPageChange(R.id.viewPager)
+    public void onViewPagerPageChange(int pos) {
+        String title = CrimeLab.get(this).getCrimes().get(pos).getTitle();
+        setTitle(title);
     }
 
     public void onCrimeUpdated(Crime crime) {

@@ -13,8 +13,6 @@ import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,13 +21,18 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import java.util.Date;
 import java.util.UUID;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
 public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "CRIME_ID";
@@ -40,11 +43,17 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_CONTACT = 2;
 
     Crime mCrime;
+    @InjectView(R.id.crime_title)
     EditText mTitleField;
+    @InjectView(R.id.crime_date)
     Button mDateButton;
+    @InjectView(R.id.crime_solved)
     CheckBox mSolvedCheckBox;
+    @InjectView(R.id.crime_imageButton)
     ImageButton mPhotoButton;
+    @InjectView(R.id.crime_imageView)
     ImageView mPhotoView;
+    @InjectView(R.id.crime_suspectButton)
     Button mSuspectButton;
     Callbacks mCallbacks;
 
@@ -92,60 +101,18 @@ public class CrimeFragment extends Fragment {
     @TargetApi(11)
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, parent, false);
+        ButterKnife.inject(this, v);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         }
         
-        mTitleField = (EditText)v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
-        mTitleField.addTextChangedListener(new TextWatcher() {
-            public void onTextChanged(CharSequence c, int start, int before, int count) {
-                mCrime.setTitle(c.toString());
-                mCallbacks.onCrimeUpdated(mCrime);
-            }
 
-            public void beforeTextChanged(CharSequence c, int start, int count, int after) {
-                // this space intentionally left blank
-            }
-
-            public void afterTextChanged(Editable c) {
-                // this one too
-            }
-        });
-        
-        mSolvedCheckBox = (CheckBox)v.findViewById(R.id.crime_solved);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
-        mSolvedCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // set the crime's solved property
-                mCrime.setSolved(isChecked);
-                mCallbacks.onCrimeUpdated(mCrime);
-            }
-        });
 
-        mDateButton = (Button)v.findViewById(R.id.crime_date);
         updateDate();
-        mDateButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                FragmentManager fm = getActivity()
-                        .getSupportFragmentManager();
-                DatePickerFragment dialog = DatePickerFragment
-                    .newInstance(mCrime.getDate());
-                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
-                dialog.show(fm, DIALOG_DATE);
-            }
-        });
-        
-        mPhotoButton = (ImageButton)v.findViewById(R.id.crime_imageButton);
-        mPhotoButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // launch the camera activity
-                Intent i = new Intent(getActivity(), CrimeCameraActivity.class);
-                startActivityForResult(i, REQUEST_PHOTO);
-            }
-        });
-        
+
         // if camera is not available, disable camera functionality
         PackageManager pm = getActivity().getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
@@ -153,48 +120,73 @@ public class CrimeFragment extends Fragment {
             mPhotoButton.setEnabled(false);
         }
 
-        mPhotoView = (ImageView)v.findViewById(R.id.crime_imageView);
-        mPhotoView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Photo p = mCrime.getPhoto();
-                if (p == null) 
-                    return;
-
-                FragmentManager fm = getActivity()
-                    .getSupportFragmentManager();
-                String path = getActivity()
-                    .getFileStreamPath(p.getFilename()).getAbsolutePath();
-                ImageFragment.createInstance(path)
-                    .show(fm, DIALOG_IMAGE);
-            }
-        });
-        
-        mSuspectButton = (Button)v.findViewById(R.id.crime_suspectButton);
-        mSuspectButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(i, REQUEST_CONTACT);
-            }
-        });
         if (mCrime.getSuspect() != null) {
             mSuspectButton.setText(mCrime.getSuspect());
         }
 
-        Button reportButton = (Button)v.findViewById(R.id.crime_reportButton);
-        reportButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
-                i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
-                i = Intent.createChooser(i, getString(R.string.send_report));
-                startActivity(i);
-            } 
-        });
-        
         return v; 
     }
-    
+
+    @OnTextChanged(R.id.crime_title)
+    public void onTitleTextChanged(CharSequence c, int start, int before, int count) {
+        mCrime.setTitle(c.toString());
+        mCallbacks.onCrimeUpdated(mCrime);
+    }
+
+    @OnCheckedChanged(R.id.crime_solved)
+    public void onSolvedCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        // set the crime's solved property
+        mCrime.setSolved(isChecked);
+        mCallbacks.onCrimeUpdated(mCrime);
+    }
+
+    @OnClick(R.id.crime_date)
+    public void onDateButtonClick(View v) {
+        FragmentManager fm = getActivity()
+                .getSupportFragmentManager();
+        DatePickerFragment dialog = DatePickerFragment
+                .newInstance(mCrime.getDate());
+        dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+        dialog.show(fm, DIALOG_DATE);
+    }
+
+    @OnClick(R.id.crime_imageButton)
+    public void onPhotoButtonClick(View v) {
+        // launch the camera activity
+        Intent i = new Intent(getActivity(), CrimeCameraActivity.class);
+        startActivityForResult(i, REQUEST_PHOTO);
+    }
+
+    @OnClick(R.id.crime_imageView)
+    public void onPhotoViewClick(View v) {
+        Photo p = mCrime.getPhoto();
+        if (p == null)
+            return;
+
+        FragmentManager fm = getActivity()
+                .getSupportFragmentManager();
+        String path = getActivity()
+                .getFileStreamPath(p.getFilename()).getAbsolutePath();
+        ImageFragment.createInstance(path)
+                .show(fm, DIALOG_IMAGE);
+    }
+
+    @OnClick(R.id.crime_suspectButton)
+    public void onSuspectButtonClick(View v) {
+        Intent i = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(i, REQUEST_CONTACT);
+    }
+
+    @OnClick(R.id.crime_reportButton)
+    public void onReportButtonClick(View v) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        i.putExtra(Intent.EXTRA_TEXT, getCrimeReport());
+        i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+        i = Intent.createChooser(i, getString(R.string.send_report));
+        startActivity(i);
+    }
+
     private void showPhoto() {
         // (re)set the image button's image based on our photo
         Photo p = mCrime.getPhoto();
