@@ -1,9 +1,5 @@
 package com.bignerdranch.android.criminalintent;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,14 +11,18 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class DatePickerFragment extends DialogFragment {
-    public static final String EXTRA_DATE = "criminalintent.DATE";
+    private static final String ARG_DATE = "criminalintent.DATE";
 
     Date mDate;
 
     public static DatePickerFragment newInstance(Date date) {
         Bundle args = new Bundle();
-        args.putSerializable(EXTRA_DATE, date);
+        args.putSerializable(ARG_DATE, date);
         
         DatePickerFragment fragment = new DatePickerFragment();
         fragment.setArguments(args);
@@ -30,12 +30,16 @@ public class DatePickerFragment extends DialogFragment {
         return fragment;
     }
 
+    public static Date getDate(Intent result) {
+        return (Date)result.getSerializableExtra(DatePickerFragment.ARG_DATE);
+    }
+
     private void sendResult(int resultCode) {
         if (getTargetFragment() == null) 
             return;
 
         Intent i = new Intent();
-        i.putExtra(EXTRA_DATE, mDate);
+        i.putExtra(ARG_DATE, mDate);
 
         getTargetFragment()
             .onActivityResult(getTargetRequestCode(), resultCode, i);
@@ -43,7 +47,7 @@ public class DatePickerFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mDate = (Date)getArguments().getSerializable(EXTRA_DATE);
+        mDate = (Date)getArguments().getSerializable(ARG_DATE);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(mDate);
@@ -60,7 +64,7 @@ public class DatePickerFragment extends DialogFragment {
                 mDate = new GregorianCalendar(year, month, day).getTime();
 
                 // update argument to preserve selected value on rotation
-                getArguments().putSerializable(EXTRA_DATE, mDate);
+                getArguments().putSerializable(ARG_DATE, mDate);
             }
         });
 
