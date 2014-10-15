@@ -28,7 +28,7 @@ import butterknife.OnClick;
 public class CrimeCameraFragment extends Fragment {
     private static final String TAG = "CrimeCameraFragment";
 
-    public static final String EXTRA_PHOTO_FILENAME = "CrimeCameraFragment.filename";
+    private static final String EXTRA_PHOTO_FILENAME = "CrimeCameraFragment.filename";
 
     private Camera mCamera;
     @InjectView(R.id.crime_camera_surfaceView)
@@ -76,6 +76,10 @@ public class CrimeCameraFragment extends Fragment {
             getActivity().finish();
         }
     };
+
+    public static String getFilename(Intent result) {
+        return result.getStringExtra(EXTRA_PHOTO_FILENAME);
+    }
 
     @Override
     @SuppressWarnings("deprecation")

@@ -221,7 +221,7 @@ public class CrimeFragment extends Fragment {
             updateDate();
         } else if (requestCode == REQUEST_PHOTO) {
             // create a new Photo object and attach it to the crime
-            String filename = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+            String filename = CrimeCameraFragment.getFilename(data);
             if (filename != null) {
                 Photo p = new Photo(filename);
                 mCrime.setPhoto(p);
