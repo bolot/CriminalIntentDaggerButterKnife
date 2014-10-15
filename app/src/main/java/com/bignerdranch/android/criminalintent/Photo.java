@@ -1,21 +1,19 @@
 package com.bignerdranch.android.criminalintent;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 public class Photo implements Serializable { 
     private static final long serialVersionUID = 1L;
 
     private static final String JSON_FILENAME = "filename";
 
+    @SerializedName(JSON_FILENAME)
     private String mFilename;
 
     /** create a new Photo with a generated filename */
     public Photo() {
-        this(UUID.randomUUID().toString() + ".jpg");
     }
 
     /** create a Photo representing an existing file on disk */
@@ -23,19 +21,7 @@ public class Photo implements Serializable {
         mFilename = filename;
     }
 
-    /** create a Photo from a JSONObject */
-    public Photo(JSONObject json) throws JSONException {
-        mFilename = json.getString(JSON_FILENAME);
-    }
-
-    public JSONObject toJSON() throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put(JSON_FILENAME, mFilename);
-        return json;
-    }
-
     public String getFilename() {
         return mFilename;
     }
 }
-

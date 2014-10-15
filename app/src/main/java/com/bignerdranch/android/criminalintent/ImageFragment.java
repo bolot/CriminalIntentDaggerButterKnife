@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 public class ImageFragment extends DialogFragment {
-    public static final String EXTRA_IMAGE_PATH = "path";
+    private static final String ARG_IMAGE_PATH = "path";
 
     public static ImageFragment createInstance(String imagePath) {
         Bundle args = new Bundle();
-        args.putSerializable(EXTRA_IMAGE_PATH, imagePath);
+        args.putSerializable(ARG_IMAGE_PATH, imagePath);
 
         ImageFragment fragment = new ImageFragment();
         fragment.setArguments(args);
@@ -27,7 +27,7 @@ public class ImageFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         mImageView = new ImageView(getActivity());
-        String path = (String)getArguments().getSerializable(EXTRA_IMAGE_PATH);
+        String path = (String)getArguments().getSerializable(ARG_IMAGE_PATH);
         BitmapDrawable image = PictureUtils.getScaledDrawable(getActivity(), path);
 
         mImageView.setImageDrawable(image);
