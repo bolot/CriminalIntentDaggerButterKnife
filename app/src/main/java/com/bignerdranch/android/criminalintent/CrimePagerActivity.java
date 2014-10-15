@@ -1,19 +1,27 @@
 package com.bignerdranch.android.criminalintent;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-
 import android.support.v4.view.ViewPager;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class CrimePagerActivity extends FragmentActivity implements CrimeFragment.Callbacks {
+    private static final String EXTRA_CRIME_ID = "com.bignerdranch.android.criminalintent.crime_id";
+
     ViewPager mViewPager;
+
+    public static Intent newIntent(Context context, UUID crimeId) {
+        Intent intent = new Intent(context, CrimePagerActivity.class);
+        intent.putExtra(EXTRA_CRIME_ID, crimeId);
+        return intent;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +46,7 @@ public class CrimePagerActivity extends FragmentActivity implements CrimeFragmen
             }
         }); 
 
-        UUID crimeId = (UUID)getIntent().getSerializableExtra(CrimeFragment.EXTRA_CRIME_ID);
+        UUID crimeId = (UUID)getIntent().getSerializableExtra(EXTRA_CRIME_ID);
         for (int i = 0; i < crimes.size(); i++) {
             if (crimes.get(i).getId().equals(crimeId)) {
                 mViewPager.setCurrentItem(i);
